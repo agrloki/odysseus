@@ -3518,6 +3518,7 @@ const INTG_TYPES = {
   codex:   { label: 'Codex',   icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 10.696.453a6.023 6.023 0 0 0-5.75 4.172 6.061 6.061 0 0 0-3.946 2.945 6.024 6.024 0 0 0 .742 7.099 5.98 5.98 0 0 0 .516 4.911 6.046 6.046 0 0 0 6.51 2.9A5.996 5.996 0 0 0 13.26 23.547a6.023 6.023 0 0 0 5.75-4.172 6.061 6.061 0 0 0 3.946-2.945 6.024 6.024 0 0 0-.674-6.609zM13.26 21.047a4.508 4.508 0 0 1-2.886-1.041l.143-.082 4.793-2.769a.777.777 0 0 0 .391-.676V10.34l2.026 1.17a.072.072 0 0 1 .039.061v5.596a4.532 4.532 0 0 1-4.506 4.48zM3.968 17.64a4.473 4.473 0 0 1-.537-3.018l.143.086 4.793 2.769a.79.79 0 0 0 .782 0l5.852-3.379v2.34a.072.072 0 0 1-.029.062l-4.845 2.796a4.532 4.532 0 0 1-6.159-1.656zM2.804 7.922a4.49 4.49 0 0 1 2.348-1.973V11.6a.778.778 0 0 0 .391.676l5.852 3.378-2.026 1.17a.072.072 0 0 1-.068 0L4.456 14.03a4.532 4.532 0 0 1-1.652-6.108zm16.423 3.823L13.375 8.367l2.026-1.17a.072.072 0 0 1 .068 0l4.845 2.796a4.525 4.525 0 0 1-.7 8.08V12.42a.778.778 0 0 0-.387-.676zm2.015-3.025l-.143-.086-4.793-2.769a.79.79 0 0 0-.782 0L9.672 9.243V6.903a.072.072 0 0 1 .029-.062l4.845-2.796a4.525 4.525 0 0 1 6.696 4.675zM8.598 12.66L6.57 11.49a.072.072 0 0 1-.039-.061V5.833a4.525 4.525 0 0 1 7.413-3.48l-.143.082-4.793 2.769a.777.777 0 0 0-.391.676l-.019 6.78zm1.1-2.379l2.607-1.505 2.607 1.505v3.01l-2.607 1.505-2.607-1.505z"/></svg>' },
   claude:  { label: 'Claude',  icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.3041 3.541h-3.6718l6.696 16.918H24Zm-10.6082 0L0 20.459h3.7442l1.3693-3.5527h7.0052l1.3693 3.5528h3.7442L10.5363 3.5409Zm-.3712 10.2232 2.2914-5.9456 2.2914 5.9456Z"/></svg>' },
   vault:   { label: 'Vault',   icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>' },
+  vk:      { label: 'VK',      icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.391 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.864-.525-2.05-1.727-1.033-1-1.49-1.135-1.744-1.135-.356 0-.458.102-.458.593v1.575c0 .424-.135.678-1.253.678-1.846 0-3.896-1.118-5.335-3.202C4.624 10.857 4.03 8.57 4.03 8.096c0-.254.102-.491.593-.491h1.744c.44 0 .61.203.78.678.863 2.49 2.303 4.675 2.896 4.675.22 0 .322-.102.322-.66V9.721c-.068-1.186-.695-1.287-.695-1.71 0-.203.17-.407.44-.407h2.744c.373 0 .508.203.508.643v3.473c0 .372.17.508.271.508.22 0 .407-.136.813-.542 1.253-1.406 2.15-3.574 2.15-3.574.119-.254.322-.491.763-.491h1.744c.525 0 .644.27.525.643-.22 1.017-2.354 4.031-2.354 4.031-.186.305-.254.44 0 .78.186.254.796.78 1.203 1.253.745.847 1.32 1.558 1.473 2.05.17.49-.085.744-.576.744z"/></svg>' },
 };
 
 // Config shared by the Codex Agent and Claude Agent forms. Both use the same
@@ -3679,6 +3680,13 @@ async function initUnifiedIntegrations() {
       items.push({ type: agentType, id: tok.id, name: tok.name || (agentType === 'claude' ? 'Claude Agent' : 'Codex Agent'), detail, enabled: true, data: tok });
     }
     // Vaultwarden removed as an integration option.
+    // VK Messenger
+    try {
+      const vkRes = await fetch('/api/vk/config', { credentials: 'same-origin' }).then(r => r.ok ? r.json() : null).catch(() => null);
+      if (vkRes && vkRes.group_id) {
+        items.push({ type: 'vk', id: '__vk__', name: 'VK Messenger', detail: `Group ${vkRes.group_id}`, enabled: vkRes.enabled || false, data: vkRes });
+      }
+    } catch (_) {}
     return items;
   }
 
@@ -3772,6 +3780,7 @@ async function initUnifiedIntegrations() {
     else if (type === 'codex') showAgentForm('codex', editId);
     else if (type === 'claude') showAgentForm('claude', editId);
     else if (type === 'vault') showVaultForm();
+    else if (type === 'vk') showVkForm();
   }
 
   // ── API form ──
@@ -5012,6 +5021,115 @@ async function initUnifiedIntegrations() {
         msg((window.__t || (k=>k))('common.success'), 'var(--green,#50fa7b)');
         await refreshStatus(); await renderList();
       } catch (e) { msg((window.__t || (k=>k))('common.error') + ': ' + e.message, 'var(--red)'); }
+    });
+  }
+
+  // ── VK Messenger form ──
+  async function showVkForm() {
+    const t = (k, fb) => (window.__t || (x => x))(k) || fb;
+    formEl.innerHTML = `
+      <div class="admin-card" style="margin-top:8px">
+        <h2 style="font-size:13px;display:flex;align-items:center;gap:6px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0"><path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.391 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.864-.525-2.05-1.727-1.033-1-1.49-1.135-1.744-1.135-.356 0-.458.102-.458.593v1.575c0 .424-.135.678-1.253.678-1.846 0-3.896-1.118-5.335-3.202C4.624 10.857 4.03 8.57 4.03 8.096c0-.254.102-.491.593-.491h1.744c.44 0 .61.203.78.678.863 2.49 2.303 4.675 2.896 4.675.22 0 .322-.102.322-.66V9.721c-.068-1.186-.695-1.287-.695-1.71 0-.203.17-.407.44-.407h2.744c.373 0 .508.203.508.643v3.473c0 .372.17.508.271.508.22 0 .407-.136.813-.542 1.253-1.406 2.15-3.574 2.15-3.574.119-.254.322-.491.763-.491h1.744c.525 0 .644.27.525.643-.22 1.017-2.354 4.031-2.354 4.031-.186.305-.254.44 0 .78.186.254.796.78 1.203 1.253.745.847 1.32 1.558 1.473 2.05.17.49-.085.744-.576.744z"/></svg>
+          VK Messenger
+        </h2>
+        <div id="uf-vk-status" style="font-size:11px;opacity:0.7;margin-bottom:8px">${t('settings.loading', 'Loading...')}</div>
+        <div class="settings-col">
+          <div class="settings-row"><label class="settings-label">${t('vk.token', 'API Token')}</label><input id="uf-vk-token" class="settings-input" type="password" placeholder="vk1.a....."></div>
+          <div class="settings-row"><label class="settings-label">${t('vk.groupId', 'Community ID')}</label><input id="uf-vk-group-id" class="settings-input" placeholder="123456789"></div>
+          <div class="settings-row"><label class="settings-label">${t('vk.apiVersion', 'API Version')}</label><input id="uf-vk-api-version" class="settings-input" value="5.199"></div>
+          <div class="settings-row"><label class="settings-label">${t('vk.pollInterval', 'Poll interval (sec)')}</label><input id="uf-vk-poll-interval" class="settings-input" type="number" value="5" min="1" max="60" style="width:80px"></div>
+          <div class="settings-row" style="margin-top:10px;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap;">
+            <span id="uf-vk-msg" style="font-size:11px;flex:1;margin-right:8px"></span>
+            <button class="admin-btn-add" id="uf-vk-save" style="background:transparent;color:var(--accent, var(--red));border-color:color-mix(in srgb, var(--accent, var(--red)) 45%, var(--border));font-weight:600;">${t('common.save', 'Save')}</button>
+            <button class="admin-btn-add" id="uf-vk-test" style="background:transparent;color:var(--accent, var(--red));border-color:color-mix(in srgb, var(--accent, var(--red)) 45%, var(--border));">${t('vk.test', 'Test')}</button>
+            <button class="admin-btn-add" id="uf-vk-start" style="background:transparent;color:var(--green,#4caf50);border-color:color-mix(in srgb, var(--green,#4caf50) 45%, var(--border));">${t('vk.start', 'Start')}</button>
+            <button class="admin-btn-add" id="uf-vk-stop" style="background:transparent;color:var(--red,#f44336);border-color:color-mix(in srgb, var(--red,#f44336) 45%, var(--border));display:none">${t('vk.stop', 'Stop')}</button>
+            <button class="admin-btn-add" id="uf-vk-cancel" style="background:transparent;color:var(--accent, var(--red));border-color:color-mix(in srgb, var(--accent, var(--red)) 45%, var(--border));">${t('common.cancel', 'Cancel')}</button>
+          </div>
+        </div>
+      </div>`;
+
+    const msg = (text, color) => {
+      const m = el('uf-vk-msg');
+      if (m) { m.textContent = text || ''; m.style.color = color || ''; }
+    };
+
+    async function refreshStatus() {
+      try {
+        const [cfgRes, stRes] = await Promise.all([
+          fetch('/api/vk/config', { credentials: 'same-origin' }).then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch('/api/vk/status', { credentials: 'same-origin' }).then(r => r.ok ? r.json() : null).catch(() => null),
+        ]);
+        if (cfgRes) {
+          if (el('uf-vk-group-id')) el('uf-vk-group-id').value = cfgRes.group_id || '';
+          if (el('uf-vk-api-version')) el('uf-vk-api-version').value = cfgRes.api_version || '5.199';
+          if (el('uf-vk-poll-interval')) el('uf-vk-poll-interval').value = cfgRes.poll_interval || 5;
+          if (cfgRes.token_masked && el('uf-vk-token')) el('uf-vk-token').placeholder = cfgRes.token_masked;
+        }
+        const statusEl = el('uf-vk-status');
+        const startBtn = el('uf-vk-start');
+        const stopBtn = el('uf-vk-stop');
+        if (stRes) {
+          if (statusEl) {
+            statusEl.textContent = stRes.running
+              ? `${t('vk.connected', 'Connected')} (${stRes.status})`
+              : `${t('vk.disconnected', 'Disconnected')}${stRes.error ? ': ' + stRes.error : ''}`;
+            statusEl.style.color = stRes.running ? 'var(--green,#50fa7b)' : '';
+          }
+          if (startBtn) startBtn.style.display = stRes.running ? 'none' : '';
+          if (stopBtn) stopBtn.style.display = stRes.running ? '' : 'none';
+        }
+      } catch (_) {}
+    }
+    await refreshStatus();
+
+    el('uf-vk-cancel')?.addEventListener('click', () => { formEl.style.display = 'none'; });
+
+    el('uf-vk-save')?.addEventListener('click', async () => {
+      msg(t('settings.loading', 'Loading...'));
+      try {
+        const body = {
+          token: el('uf-vk-token')?.value || '',
+          group_id: el('uf-vk-group-id')?.value || '',
+          api_version: el('uf-vk-api-version')?.value || '5.199',
+          poll_interval: parseInt(el('uf-vk-poll-interval')?.value || '5'),
+        };
+        const r = await fetch('/api/vk/config', {
+          method: 'POST', credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const d = await r.json();
+        if (d.ok) { msg(t('settings.saved', 'Saved'), 'var(--green,#50fa7b)'); await refreshStatus(); await renderList(); }
+        else msg(d.error || t('common.error', 'Error'), 'var(--red)');
+      } catch (e) { msg(t('common.error', 'Error') + ': ' + e.message, 'var(--red)'); }
+    });
+
+    el('uf-vk-test')?.addEventListener('click', async () => {
+      msg('Testing...');
+      try {
+        const r = await fetch('/api/vk/test', { method: 'POST', credentials: 'same-origin' });
+        const d = await r.json();
+        msg(d.ok ? `Connected to "${d.name}"` : `Error: ${d.error}`, d.ok ? 'var(--green,#50fa7b)' : 'var(--red)');
+      } catch (e) { msg('Error: ' + e.message, 'var(--red)'); }
+    });
+
+    el('uf-vk-start')?.addEventListener('click', async () => {
+      msg('Starting...');
+      try {
+        const r = await fetch('/api/vk/start', { method: 'POST', credentials: 'same-origin' });
+        const d = await r.json();
+        if (d.ok) { await refreshStatus(); await renderList(); }
+        else msg('Error: ' + d.error, 'var(--red)');
+      } catch (e) { msg('Error: ' + e.message, 'var(--red)'); }
+    });
+
+    el('uf-vk-stop')?.addEventListener('click', async () => {
+      try {
+        await fetch('/api/vk/stop', { method: 'POST', credentials: 'same-origin' });
+        await refreshStatus(); await renderList();
+      } catch (e) { msg('Error: ' + e.message, 'var(--red)'); }
     });
   }
 

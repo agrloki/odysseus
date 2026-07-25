@@ -112,6 +112,12 @@ DEFAULT_SETTINGS = {
     # BookStack integration — external wiki platform
     "bookstack_url": "",
     "bookstack_token": "",
+    # VK Messenger integration
+    "vk_token": "",
+    "vk_group_id": "",
+    "vk_api_version": "5.199",
+    "vk_poll_interval": 5,
+    "vk_enabled": False,
     "agent_max_tool_calls": 0,
     "agent_max_rounds": 20,  # per-message agent step cap (clamped 1..200)
     # Soft input-token budget for the agent loop. The DEFAULT value (6000) is the

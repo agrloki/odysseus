@@ -795,6 +795,10 @@ app.include_router(setup_code_server_routes(), prefix="/api/code-server")
 from routes.bookstack_routes import setup_bookstack_routes
 app.include_router(setup_bookstack_routes())
 
+# VK Messenger integration
+from routes.vk_routes import router as vk_router
+app.include_router(vk_router)
+
 # Hardware model fitting (cookbook "What Fits?" tab)
 from routes.hwfit_routes import setup_hwfit_routes
 app.include_router(setup_hwfit_routes())
