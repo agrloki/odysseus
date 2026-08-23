@@ -97,7 +97,7 @@ RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/wh
     python3 -m piper.download_voices --download-dir /app/data/piper_voices ru_RU-irina-medium en_US-lessac-medium
 ENV TORCH_HOME=/app/data/torch_cache
 RUN mkdir -p /app/data/silero_models /app/data/torch_cache && \
-    python3 -c "import torch; torch.hub.load('snakers4/silero-models', 'silero_tts', language='ru', speaker='v3_ru', trust_repo=True)"
+    python3 -c "import torch; torch.hub.load('snakers4/silero-models', 'silero_tts', language='ru', speaker='v5_ru', trust_repo=True)"
 RUN if [ "$INSTALL_SPEECH_GPU" = "true" ]; then \
         pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cu121; \
     fi
@@ -115,6 +115,30 @@ RUN pip install --no-cache-dir python-magic==0.4.27
 COPY --from=realesrgan-wheels /wheels/ /tmp/odysseus-wheels/
 RUN pip install --no-cache-dir --no-deps /tmp/odysseus-wheels/*.whl \
     && rm -rf /tmp/odysseus-wheels
+
+# Pre-install the built-in Browser MCP server (@playwright/mcp) so it works
+# immediately after `docker compose up` with zero first-run downloads.
+#
+# Two things have to be baked into the image:
+#   1. The npm/npx package cache. builtin_mcp.py refuses to start the server
+#      unless the package is already in the local npx cache (a first-run
+#      download can take minutes or hang). The cache cannot stay in /root/.npm
+#      because the entrypoint drops privileges to PUID/PGID at runtime, so it
+#      lives in a world-accessible path selected via npm_config_cache.
+#   2. The matching chromium build. @playwright/mcp bundles playwright-core,
+#      whose expected browser revision changes with every release — installing
+#      a standalone `playwright` here could mismatch. So we locate the
+#      playwright-core CLI *inside* the freshly cached package and let it
+#      fetch its own chromium (plus system libs via --with-deps) into
+#      PLAYWRIGHT_BROWSERS_PATH, which the runtime user can read/write.
+ENV npm_config_cache=/opt/npm-cache \
+    PLAYWRIGHT_BROWSERS_PATH=/opt/ms-playwright
+RUN mkdir -p /opt/npm-cache /opt/ms-playwright \
+    && npx -y @playwright/mcp@latest --version \
+    && PW_CORE="$(find /opt/npm-cache/_npx -path '*/node_modules/playwright-core/cli.js' | head -n 1)" \
+    && [ -n "$PW_CORE" ] \
+    && node "$PW_CORE" install --with-deps chromium \
+    && chmod -R a+rwX /opt/npm-cache /opt/ms-playwright
 
 # Copy app code
 COPY . .

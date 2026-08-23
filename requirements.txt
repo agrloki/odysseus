@@ -3,6 +3,9 @@ uvicorn
 python-multipart
 python-dotenv
 httpx
+# WebSocket client for the code-server reverse proxy
+# (routes/code_server_routes.py imports it at module top).
+websockets
 httpcore>=1.0,<2.0
 pydantic>=2.13.4
 pydantic-settings>=2.14.1
@@ -38,7 +41,10 @@ python-dateutil
 caldav
 cryptography
 bcrypt
-mcp
+# MCP SDK: 2.0 dropped the low-level Server decorators (@server.list_tools,
+# @server.call_tool) and the client APIs used by src/mcp_manager.py and
+# src/mcp_oauth.py, so stay on 1.x until the code is migrated.
+mcp>=1.9,<2
 pyotp
 qrcode[pil]
 croniter
