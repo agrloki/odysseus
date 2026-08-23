@@ -5786,6 +5786,7 @@ async function initUnifiedIntegrations() {
       ['contacts', 'Contacts Import'],
       ['email', (window.__t || (k=>k))('settings.email')],
       ['mcp', 'MCP Tool Server'],
+      ['vk', 'VK Messenger'],
     ];
     const _iconFor = (k) => (INTG_TYPES[k]?.icon || '').replace(/width="14"/, 'width="16"').replace(/height="14"/, 'height="16"');
     const _rowsHtml = _typeOptions.map(([k, label]) => `<button type="button" class="uf-type-option" data-value="${k}" style="display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;background:transparent;border:0;color:var(--fg);font:inherit;cursor:pointer;text-align:left;"><span style="display:inline-flex;color:var(--accent, var(--red));flex-shrink:0;">${_iconFor(k)}</span><span>${esc(label)}</span></button>`).join('');
